@@ -28,9 +28,9 @@ function renderStem(stem, style, emphasisStyle) {
   );
 }
 
-export default function DrillScreen({ level, timeIdx, onFinish, onQuit }) {
+export default function DrillScreen({ level, topic, timeIdx, onFinish, onQuit }) {
   const TOTAL_TIME = CONFIG.timeOptions[timeIdx];
-  const pool = QUESTIONS_BY_LEVEL[level];
+  const pool = topic ? QUESTIONS_BY_LEVEL[level].filter((q) => q.topic === topic) : QUESTIONS_BY_LEVEL[level];
   const [order] = useState(() => shuffle(pool.map((_, i) => i)));
 
   const [idx, setIdx] = useState(0);
@@ -124,7 +124,7 @@ export default function DrillScreen({ level, timeIdx, onFinish, onQuit }) {
 
   function handleContinue() {
     if (idx + 1 >= order.length) {
-      onFinish({ score, bestStreak });
+      onFinish({ score, bestStreak, total: order.length, topic: topic || null });
     } else {
       setIdx((i) => i + 1);
     }

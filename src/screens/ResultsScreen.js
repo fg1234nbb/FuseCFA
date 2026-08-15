@@ -2,16 +2,21 @@ import React, { useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 
 import { CONFIG } from '../config';
-import { QUICKSHEETS, QUESTIONS_BY_LEVEL } from '../data/questions';
+import { QUICKSHEETS } from '../data/questions';
 import { getProgress, setProgress } from '../utils/storage';
 import { COLORS, MONO, SANS } from '../theme';
 
 export default function ResultsScreen({ level, result, onBackToHub }) {
-  const total = QUESTIONS_BY_LEVEL[level].length;
+  const total = result.total;
   const qs = QUICKSHEETS[level];
   const p = CONFIG.pricing[level];
+  const isTopicRun = !!result.topic;
 
   useEffect(() => {
+    // Only persist to overall level progress for full, mixed-topic
+    // runs — that schema assumes a run of the whole level's question
+    // set, so a single-topic quiz shouldn't feed into (or skew) it.
+    if (isTopicRun) return;
     (async () => {
       const existing = (await getProgress(level)) || { attempts: 0, bestScore: 0, bestStreak: 0 };
       await setProgress(level, {
@@ -29,9 +34,11 @@ export default function ResultsScreen({ level, result, onBackToHub }) {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.stage}>
         <View style={styles.tag}>
-          <Text style={styles.tagText}>{p.name} · COMPLETE</Text>
+          <Text style={styles.tagText}>
+            {p.name}{isTopicRun ? ` · ${result.topic}` : ''} · COMPLETE
+          </Text>
         </View>
-        <Text style={[styles.score, result.score >= 7 ? { color: COLORS.success } : { color: COLORS.amber }]}>
+        <Text style={[styles.score, result.score >= total * 0.7 ? { color: COLORS.success } : { color: COLORS.amber }]}>
           {result.score}/{total}
         </Text>
         <Text style={styles.scoreLabel}>BEST STREAK: {result.bestStreak}</Text>

@@ -17,9 +17,10 @@ import { COLORS } from './src/theme';
 export default function App() {
   const [screen, setScreen] = useState('hub'); // 'hub' | 'ready' | 'drill' | 'results'
   const [currentLevel, setCurrentLevel] = useState(1);
+  const [currentTopic, setCurrentTopic] = useState(null); // null = full level, mixed topics
   const [selectedTimeIdx, setSelectedTimeIdx] = useState(1);
   const [hubKey, setHubKey] = useState(0);
-  const [lastResult, setLastResult] = useState({ score: 0, bestStreak: 0 });
+  const [lastResult, setLastResult] = useState({ score: 0, bestStreak: 0, total: 10, topic: null });
 
   // Bumping hubKey forces HubScreen to remount, which re-reads
   // saved progress from storage — so the orbit rings are always
@@ -29,8 +30,12 @@ export default function App() {
     setHubKey((k) => k + 1);
   }, []);
 
-  const goToReady = useCallback((level) => {
+  // topic is optional — omitted (or undefined) means the full,
+  // mixed-topic level trial; passed means a single-topic quiz
+  // (only reachable once that topic is unlocked, see HubScreen).
+  const goToReady = useCallback((level, topic = null) => {
     setCurrentLevel(level);
+    setCurrentTopic(topic);
     setScreen('ready');
   }, []);
 
@@ -52,6 +57,7 @@ export default function App() {
       {screen === 'ready' && (
         <ReadyScreen
           level={currentLevel}
+          topic={currentTopic}
           selectedTimeIdx={selectedTimeIdx}
           onChangeTimeIdx={setSelectedTimeIdx}
           onBack={goToHub}
@@ -62,6 +68,7 @@ export default function App() {
       {screen === 'drill' && (
         <DrillScreen
           level={currentLevel}
+          topic={currentTopic}
           timeIdx={selectedTimeIdx}
           onFinish={goToResults}
           onQuit={goToHub}

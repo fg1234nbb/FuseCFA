@@ -8,11 +8,13 @@ import { LEVEL_INFO, QUESTIONS_BY_LEVEL } from '../data/questions';
 import { CONTACT_EMAIL, TERMS_TEXT, PRIVACY_TEXT } from '../data/legal';
 import { getProgress, resetAllProgress } from '../utils/storage';
 import { purchaseProduct, restorePurchases } from '../utils/purchases';
+import { unlockTopic, unlockFullLevel, getUnlockedTopicsForLevel } from '../utils/entitlements';
 import { COLORS, MONO, SANS } from '../theme';
 
 export default function HubScreen({ onSelectLevel }) {
   const [progressByLevel, setProgressByLevel] = useState({ 1: null, 2: null, 3: null });
   const [selectedLevel, setSelectedLevel] = useState(null);
+  const [unlockedTopics, setUnlockedTopics] = useState([]); // [] | 'ALL' | string[]
   const [toast, setToast] = useState(null);
   const [legalModal, setLegalModal] = useState(null); // null | 'terms' | 'privacy'
 
@@ -22,6 +24,17 @@ export default function HubScreen({ onSelectLevel }) {
       setProgressByLevel(Object.fromEntries(entries));
     })();
   }, []);
+
+  useEffect(() => {
+    if (selectedLevel == null) return;
+    (async () => {
+      setUnlockedTopics(await getUnlockedTopicsForLevel(selectedLevel));
+    })();
+  }, [selectedLevel]);
+
+  function isUnlocked(topic) {
+    return unlockedTopics === 'ALL' || unlockedTopics.includes(topic);
+  }
 
   function showToast(msg) {
     setToast(msg);
@@ -53,13 +66,31 @@ export default function HubScreen({ onSelectLevel }) {
   async function handleUnlockTopic(level, topic) {
     const p = CONFIG.pricing[level];
     const res = await purchaseProduct(p.productIdTopic, `${topic} (${p.name})`);
+    // Demo mode and a genuine success both fall through here — see
+    // entitlements.js for why demo purchases still unlock locally.
+    if (!res.error && !res.cancelled) {
+      await unlockTopic(level, topic);
+      setUnlockedTopics(await getUnlockedTopicsForLevel(level));
+    }
     showToast(res.message);
   }
 
   async function handleUnlockAll(level) {
     const p = CONFIG.pricing[level];
     const res = await purchaseProduct(p.productIdFull, `all of ${p.name}`);
+    if (!res.error && !res.cancelled) {
+      await unlockFullLevel(level);
+      setUnlockedTopics(await getUnlockedTopicsForLevel(level));
+    }
     showToast(res.message);
+  }
+
+  function handleTopicPress(level, topic) {
+    if (isUnlocked(topic)) {
+      onSelectLevel(level, topic);
+    } else {
+      handleUnlockTopic(level, topic);
+    }
   }
 
   async function handleRestore() {
@@ -115,14 +146,24 @@ export default function HubScreen({ onSelectLevel }) {
             </Pressable>
 
             <Text style={styles.unlockHeading}>UNLOCK TOPICS IN THIS LEVEL</Text>
-            {topics.map((t) => (
-              <View key={t} style={styles.topicRow}>
-                <Text style={styles.topicName}>{t}</Text>
-                <Pressable style={styles.trBtn} onPress={() => handleUnlockTopic(selectedLevel, t)}>
-                  <Text style={styles.trBtnText}>£{detail.topicPrice.toFixed(2)}</Text>
+            {topics.map((t) => {
+              const unlocked = isUnlocked(t);
+              return (
+                <Pressable key={t} style={styles.topicRow} onPress={() => handleTopicPress(selectedLevel, t)}>
+                  <View style={styles.trNameRow}>
+                    {unlocked && <Text style={styles.trCheck}>✓</Text>}
+                    <Text style={styles.topicName}>{t}</Text>
+                  </View>
+                  {unlocked ? (
+                    <Text style={styles.trPracticeText}>Practice →</Text>
+                  ) : (
+                    <View style={styles.trBtn}>
+                      <Text style={styles.trBtnText}>£{detail.topicPrice.toFixed(2)}</Text>
+                    </View>
+                  )}
                 </Pressable>
-              </View>
-            ))}
+              );
+            })}
 
             <View style={styles.paywall}>
               <Text style={styles.pwEyebrow}>BEST VALUE</Text>
@@ -238,6 +279,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   topicName: { fontSize: 13, color: COLORS.text, fontFamily: SANS },
+  trNameRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
+  trCheck: { color: COLORS.success, fontFamily: MONO, fontWeight: '800', fontSize: 13 },
+  trPracticeText: { fontFamily: MONO, fontSize: 11.5, fontWeight: '700', color: COLORS.success },
   trBtn: {
     backgroundColor: 'rgba(255,176,32,0.1)',
     borderWidth: 1,

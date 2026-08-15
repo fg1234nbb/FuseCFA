@@ -1,9 +1,14 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { CONFIG } from '../config';
+import { QUESTIONS_BY_LEVEL } from '../data/questions';
 import { COLORS, MONO, SANS } from '../theme';
 
-export default function ReadyScreen({ level, selectedTimeIdx, onChangeTimeIdx, onBack, onStart }) {
+export default function ReadyScreen({ level, topic, selectedTimeIdx, onChangeTimeIdx, onBack, onStart }) {
+  const questionCount = topic
+    ? QUESTIONS_BY_LEVEL[level].filter((q) => q.topic === topic).length
+    : QUESTIONS_BY_LEVEL[level].length;
+
   return (
     <View style={styles.container}>
       <View style={styles.stage}>
@@ -11,12 +16,14 @@ export default function ReadyScreen({ level, selectedTimeIdx, onChangeTimeIdx, o
           <Text style={styles.back}>← back</Text>
         </Pressable>
         <View style={styles.tag}>
-          <Text style={styles.tagText}>{CONFIG.pricing[level].name} · FREE SAMPLE</Text>
+          <Text style={styles.tagText}>
+            {CONFIG.pricing[level].name} {topic ? `· ${topic}` : '· FREE SAMPLE'}
+          </Text>
         </View>
         <Text style={styles.title}>Quick reminder before you start</Text>
 
         <View style={styles.rules}>
-          <Text style={styles.rule}>→ 10 questions, one at a time — no going back.</Text>
+          <Text style={styles.rule}>→ {questionCount} question{questionCount === 1 ? '' : 's'}, one at a time — no going back.</Text>
           <Text style={styles.rule}>→ Each has 3 options. Pick one before the ring runs out.</Text>
           <Text style={styles.rule}>→ Wrong answer or timeout = fuse blows, streak resets.</Text>
           <Text style={styles.rule}>→ Need a break? Tap pause anytime during the drill.</Text>
