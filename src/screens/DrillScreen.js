@@ -5,7 +5,8 @@ import FuseRing from '../components/FuseRing';
 import { CONFIG } from '../config';
 import { QUESTIONS_BY_LEVEL } from '../data/questions';
 import { tickFeedback, successFeedback, failFeedback } from '../utils/haptics';
-import { COLORS, MONO, SANS } from '../theme';
+import { recordAnswer } from '../utils/questionStats';
+import { COLORS, MONO, SANS, rem } from '../theme';
 
 function shuffle(arr) {
   const a = arr.slice();
@@ -65,6 +66,7 @@ export default function DrillScreen({ level, topic, timeIdx, onFinish, onQuit })
       clearTimer();
 
       const correct = i === q.correct;
+      recordAnswer(q.id, correct); // fire-and-forget — persists this question as "seen" immediately
       if (correct) {
         setScore((s) => s + 1);
         setStreak((s) => {
@@ -231,7 +233,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 9,
     paddingVertical: 4,
   },
-  tagText: { fontFamily: MONO, fontSize: 10.5, letterSpacing: 1, color: COLORS.amber },
+  tagText: { fontFamily: MONO, fontSize: rem(10.5), letterSpacing: 1, color: COLORS.amber },
   pauseBtn: {
     width: 34,
     height: 34,
@@ -241,9 +243,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pauseBtnText: { color: COLORS.text, fontSize: 13 },
-  vignette: { fontSize: 13.5, lineHeight: 20, color: COLORS.textDim, marginBottom: 10, fontFamily: SANS },
-  stem: { fontSize: 16, lineHeight: 23, fontWeight: '600', color: COLORS.text, marginBottom: 18, fontFamily: SANS },
+  pauseBtnText: { color: COLORS.text, fontSize: rem(13) },
+  vignette: { fontSize: rem(13.5), lineHeight: 20, color: COLORS.textDim, marginBottom: 10, fontFamily: SANS },
+  stem: { fontSize: rem(16), lineHeight: 23, fontWeight: '600', color: COLORS.text, marginBottom: 18, fontFamily: SANS },
   stemEmphasis: { color: COLORS.amber },
   options: { gap: 9 },
   opt: {
@@ -259,7 +261,7 @@ const styles = StyleSheet.create({
   optWrong: { borderColor: COLORS.danger, backgroundColor: 'rgba(255,59,48,0.08)' },
   optDim: { opacity: 0.55 },
   optLetter: { fontFamily: MONO, fontWeight: '700', color: COLORS.amber, width: 18 },
-  optText: { flex: 1, fontSize: 14, lineHeight: 20, color: COLORS.text, fontFamily: SANS },
+  optText: { flex: 1, fontSize: rem(14), lineHeight: 20, color: COLORS.text, fontFamily: SANS },
   explain: {
     marginTop: 14,
     padding: 13,
@@ -270,19 +272,19 @@ const styles = StyleSheet.create({
     borderLeftColor: COLORS.amber,
     borderRadius: 8,
   },
-  explainText: { fontSize: 13, lineHeight: 19, color: COLORS.textDim, fontFamily: SANS },
+  explainText: { fontSize: rem(13), lineHeight: 19, color: COLORS.textDim, fontFamily: SANS },
   explainWhy: { fontWeight: '700', color: COLORS.text },
   continueBtn: { marginTop: 16, backgroundColor: COLORS.amber, borderRadius: 10, padding: 13, alignItems: 'center' },
-  continueBtnText: { fontFamily: MONO, fontWeight: '700', fontSize: 13, color: '#1A1200', letterSpacing: 1 },
+  continueBtnText: { fontFamily: MONO, fontWeight: '700', fontSize: rem(13), color: '#1A1200', letterSpacing: 1 },
   dots: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, justifyContent: 'center', marginTop: 18 },
   dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: COLORS.line },
   dotActive: { backgroundColor: COLORS.amber },
   dotDone: { backgroundColor: COLORS.success },
   flashOverlay: { flex: 1, backgroundColor: 'rgba(11,14,17,0.92)', alignItems: 'center', justifyContent: 'center', gap: 6 },
-  flashTitle: { fontFamily: MONO, fontWeight: '800', fontSize: 26, letterSpacing: 1 },
+  flashTitle: { fontFamily: MONO, fontWeight: '800', fontSize: rem(26), letterSpacing: 1 },
   flashOk: { color: COLORS.success },
   flashBad: { color: COLORS.danger },
-  flashSub: { fontFamily: MONO, fontSize: 13, color: COLORS.textDim },
+  flashSub: { fontFamily: MONO, fontSize: rem(13), color: COLORS.textDim },
   pauseOverlay: { flex: 1, backgroundColor: 'rgba(11,14,17,0.85)', alignItems: 'center', justifyContent: 'center', padding: 24 },
   pauseCard: {
     backgroundColor: COLORS.panel,
@@ -294,8 +296,8 @@ const styles = StyleSheet.create({
     maxWidth: 320,
     alignItems: 'center',
   },
-  pauseTitle: { fontFamily: MONO, fontWeight: '800', fontSize: 18, color: COLORS.amber, letterSpacing: 2, marginBottom: 10 },
-  pauseSub: { fontSize: 13, color: COLORS.textDim, textAlign: 'center', lineHeight: 19, marginBottom: 18, fontFamily: SANS },
+  pauseTitle: { fontFamily: MONO, fontWeight: '800', fontSize: rem(18), color: COLORS.amber, letterSpacing: 2, marginBottom: 10 },
+  pauseSub: { fontSize: rem(13), color: COLORS.textDim, textAlign: 'center', lineHeight: 19, marginBottom: 18, fontFamily: SANS },
   resumeBtn: {
     backgroundColor: COLORS.amber,
     borderRadius: 10,
@@ -305,7 +307,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  resumeBtnText: { fontFamily: MONO, fontWeight: '700', fontSize: 13, color: '#1A1200' },
+  resumeBtnText: { fontFamily: MONO, fontWeight: '700', fontSize: rem(13), color: '#1A1200' },
   quitBtn: { paddingVertical: 8 },
-  quitBtnText: { fontFamily: MONO, fontSize: 12, color: COLORS.textDim, textDecorationLine: 'underline' },
+  quitBtnText: { fontFamily: MONO, fontSize: rem(12), color: COLORS.textDim, textDecorationLine: 'underline' },
 });
