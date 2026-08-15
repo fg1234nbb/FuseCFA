@@ -2,6 +2,115 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Modal, View, Text, Pressable, StyleSheet, Animated, Easing } from 'react-native';
 import { COLORS, MONO, SANS, rem } from '../theme';
 
+// NOTE: `styles` is defined before anything that references it (TapRipple,
+// STEPS) because STEPS is a module-scope array built immediately when this
+// file loads — not inside a function — so `styles` must already exist by
+// then. Defining it after TapRipple/STEPS (as an earlier version of this
+// file did) causes "cannot read property '...' of undefined" at import
+// time, since `const styles = ...` isn't hoisted the way a function
+// declaration is.
+const styles = StyleSheet.create({
+  overlay: { flex: 1, backgroundColor: 'rgba(11,14,17,0.92)', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  card: {
+    backgroundColor: COLORS.panel,
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    borderRadius: 18,
+    padding: 22,
+    width: '100%',
+    maxWidth: 360,
+  },
+  skipBtn: { position: 'absolute', top: 14, right: 16, zIndex: 2 },
+  skipText: { fontFamily: MONO, fontSize: rem(11), color: COLORS.textDim },
+  heading: {
+    fontFamily: MONO,
+    fontWeight: '800',
+    fontSize: rem(16),
+    color: COLORS.amber,
+    textAlign: 'center',
+    marginBottom: 18,
+  },
+  mockStage: {
+    height: 150,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  mockCenter: { alignItems: 'center', justifyContent: 'center' },
+
+  mockOrbitWrap: { width: 130, height: 130, alignItems: 'center', justifyContent: 'center' },
+  mockRing: {
+    position: 'absolute',
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    borderStyle: 'dashed',
+  },
+  mockNode: {
+    position: 'absolute',
+    top: 6,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 3,
+    borderColor: COLORS.amber,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.panelRaised,
+  },
+  mockNodeText: { fontFamily: MONO, fontWeight: '800', fontSize: rem(14), color: COLORS.text },
+
+  mockBtn: {
+    backgroundColor: COLORS.amber,
+    borderRadius: 10,
+    paddingVertical: 13,
+    paddingHorizontal: 22,
+  },
+  mockBtnText: { fontFamily: MONO, fontWeight: '700', fontSize: rem(13), color: '#1A1200', letterSpacing: 1 },
+
+  mockTopicRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: COLORS.panelRaised,
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    borderRadius: 10,
+    paddingVertical: 11,
+    paddingHorizontal: 14,
+  },
+  mockTopicName: { fontSize: rem(13), color: COLORS.text, fontFamily: SANS },
+  mockPricePill: {
+    backgroundColor: 'rgba(255,176,32,0.1)',
+    borderWidth: 1,
+    borderColor: COLORS.amberDim,
+    borderRadius: 7,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  mockPriceText: { fontFamily: MONO, fontSize: rem(11.5), fontWeight: '700', color: COLORS.amber },
+
+  ripple: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: COLORS.success,
+  },
+
+  caption: { fontSize: rem(13.5), color: COLORS.textDim, textAlign: 'center', lineHeight: rem(20), marginBottom: 18, fontFamily: SANS },
+  dots: { flexDirection: 'row', justifyContent: 'center', gap: 6, marginBottom: 20 },
+  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: COLORS.line },
+  dotActive: { backgroundColor: COLORS.amber },
+  nextBtn: { backgroundColor: COLORS.amber, borderRadius: 10, paddingVertical: 13, alignItems: 'center', marginBottom: 12 },
+  nextBtnText: { fontFamily: MONO, fontWeight: '800', fontSize: rem(13), color: '#1A1200' },
+  dontShowBtn: { alignItems: 'center', paddingVertical: 4 },
+  dontShowText: { fontFamily: MONO, fontSize: rem(11), color: COLORS.textDim, textDecorationLine: 'underline' },
+});
+
 // A looping "tap here" ripple — a ring that expands and fades, over
 // whatever mock UI element each step is pointing at.
 function TapRipple() {
@@ -106,105 +215,3 @@ export default function OnboardingModal({ visible, onDone }) {
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: 'rgba(11,14,17,0.92)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  card: {
-    backgroundColor: COLORS.panel,
-    borderWidth: 1,
-    borderColor: COLORS.line,
-    borderRadius: 18,
-    padding: 22,
-    width: '100%',
-    maxWidth: 360,
-  },
-  skipBtn: { position: 'absolute', top: 14, right: 16, zIndex: 2 },
-  skipText: { fontFamily: MONO, fontSize: rem(11), color: COLORS.textDim },
-  heading: {
-    fontFamily: MONO,
-    fontWeight: '800',
-    fontSize: rem(16),
-    color: COLORS.amber,
-    textAlign: 'center',
-    marginBottom: 18,
-  },
-  mockStage: {
-    height: 150,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  mockCenter: { alignItems: 'center', justifyContent: 'center' },
-
-  mockOrbitWrap: { width: 130, height: 130, alignItems: 'center', justifyContent: 'center' },
-  mockRing: {
-    position: 'absolute',
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-    borderWidth: 1,
-    borderColor: COLORS.line,
-    borderStyle: 'dashed',
-  },
-  mockNode: {
-    position: 'absolute',
-    top: 6,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 3,
-    borderColor: COLORS.amber,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.panelRaised,
-  },
-  mockNodeText: { fontFamily: MONO, fontWeight: '800', fontSize: rem(14), color: COLORS.text },
-
-  mockBtn: {
-    backgroundColor: COLORS.amber,
-    borderRadius: 10,
-    paddingVertical: 13,
-    paddingHorizontal: 22,
-  },
-  mockBtnText: { fontFamily: MONO, fontWeight: '700', fontSize: rem(13), color: '#1A1200', letterSpacing: 1 },
-
-  mockTopicRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: COLORS.panelRaised,
-    borderWidth: 1,
-    borderColor: COLORS.line,
-    borderRadius: 10,
-    paddingVertical: 11,
-    paddingHorizontal: 14,
-  },
-  mockTopicName: { fontSize: rem(13), color: COLORS.text, fontFamily: SANS },
-  mockPricePill: {
-    backgroundColor: 'rgba(255,176,32,0.1)',
-    borderWidth: 1,
-    borderColor: COLORS.amberDim,
-    borderRadius: 7,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  mockPriceText: { fontFamily: MONO, fontSize: rem(11.5), fontWeight: '700', color: COLORS.amber },
-
-  ripple: {
-    position: 'absolute',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    borderWidth: 2,
-    borderColor: COLORS.success,
-  },
-
-  caption: { fontSize: rem(13.5), color: COLORS.textDim, textAlign: 'center', lineHeight: rem(20), marginBottom: 18, fontFamily: SANS },
-  dots: { flexDirection: 'row', justifyContent: 'center', gap: 6, marginBottom: 20 },
-  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: COLORS.line },
-  dotActive: { backgroundColor: COLORS.amber },
-  nextBtn: { backgroundColor: COLORS.amber, borderRadius: 10, paddingVertical: 13, alignItems: 'center', marginBottom: 12 },
-  nextBtnText: { fontFamily: MONO, fontWeight: '800', fontSize: rem(13), color: '#1A1200' },
-  dontShowBtn: { alignItems: 'center', paddingVertical: 4 },
-  dontShowText: { fontFamily: MONO, fontSize: rem(11), color: COLORS.textDim, textDecorationLine: 'underline' },
-});
