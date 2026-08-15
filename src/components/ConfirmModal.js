@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
-import { COLORS, MONO, SANS } from '../theme';
+import { COLORS, MONO, SANS, rem } from '../theme';
 
 export default function ConfirmModal({ visible, title, lines, confirmLabel, cancelLabel = 'Cancel', onConfirm, onCancel }) {
   return (
@@ -36,10 +36,10 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 340,
   },
-  title: { fontFamily: MONO, fontWeight: '800', fontSize: 16, color: COLORS.amber, marginBottom: 14, textAlign: 'center' },
-  line: { fontSize: 14, color: COLORS.text, textAlign: 'center', marginBottom: 6, fontFamily: SANS, lineHeight: 20 },
+  title: { fontFamily: MONO, fontWeight: '800', fontSize: rem(16), color: COLORS.amber, marginBottom: 14, textAlign: 'center' },
+  line: { fontSize: rem(14), color: COLORS.text, textAlign: 'center', marginBottom: 6, fontFamily: SANS, lineHeight: 20 },
   confirmBtn: { backgroundColor: COLORS.amber, borderRadius: 10, paddingVertical: 13, alignItems: 'center', marginTop: 12 },
-  confirmBtnText: { fontFamily: MONO, fontWeight: '800', fontSize: 13, color: '#1A1200' },
+  confirmBtnText: { fontFamily: MONO, fontWeight: '800', fontSize: rem(13), color: '#1A1200' },
   cancelBtn: { paddingVertical: 12, alignItems: 'center' },
-  cancelBtnText: { fontFamily: MONO, fontSize: 12, color: COLORS.textDim },
+  cancelBtnText: { fontFamily: MONO, fontSize: rem(12), color: COLORS.textDim },
 });

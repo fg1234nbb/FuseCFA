@@ -4,7 +4,7 @@ import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { CONFIG } from '../config';
 import { QUICKSHEETS } from '../data/questions';
 import { getProgress, setProgress } from '../utils/storage';
-import { COLORS, MONO, SANS } from '../theme';
+import { COLORS, MONO, SANS, rem } from '../theme';
 
 export default function ResultsScreen({ level, result, onBackToHub }) {
   const total = result.total;
@@ -76,9 +76,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     marginBottom: 10,
   },
-  tagText: { fontFamily: MONO, fontSize: 10.5, letterSpacing: 1, color: COLORS.amber },
-  score: { fontFamily: MONO, fontSize: 46, fontWeight: '800' },
-  scoreLabel: { fontFamily: MONO, fontSize: 11, color: COLORS.textDim, letterSpacing: 1, marginBottom: 18 },
+  tagText: { fontFamily: MONO, fontSize: rem(10.5), letterSpacing: 1, color: COLORS.amber },
+  score: { fontFamily: MONO, fontSize: rem(46), fontWeight: '800' },
+  scoreLabel: { fontFamily: MONO, fontSize: rem(11), color: COLORS.textDim, letterSpacing: 1, marginBottom: 18 },
   flipcard: {
     backgroundColor: COLORS.panelRaised,
     borderWidth: 1,
@@ -88,9 +88,9 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 18,
   },
-  fcLabel: { fontFamily: MONO, fontSize: 10, color: COLORS.amber, letterSpacing: 1, marginBottom: 8 },
-  fcFormula: { fontFamily: MONO, fontSize: 15, color: COLORS.text, fontWeight: '600', marginBottom: 8 },
-  fcNote: { fontSize: 12.5, color: COLORS.textDim, lineHeight: 19, fontFamily: SANS },
+  fcLabel: { fontFamily: MONO, fontSize: rem(10), color: COLORS.amber, letterSpacing: 1, marginBottom: 8 },
+  fcFormula: { fontFamily: MONO, fontSize: rem(15), color: COLORS.text, fontWeight: '600', marginBottom: 8 },
+  fcNote: { fontSize: rem(12.5), color: COLORS.textDim, lineHeight: 19, fontFamily: SANS },
   replayBtn: { borderWidth: 1, borderColor: COLORS.line, borderRadius: 10, padding: 12, width: '100%', alignItems: 'center' },
-  replayBtnText: { fontFamily: MONO, fontSize: 12, color: COLORS.textDim, letterSpacing: 1 },
+  replayBtnText: { fontFamily: MONO, fontSize: rem(12), color: COLORS.textDim, letterSpacing: 1 },
 });

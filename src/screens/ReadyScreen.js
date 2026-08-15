@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { CONFIG } from '../config';
 import { QUESTIONS_BY_LEVEL } from '../data/questions';
-import { COLORS, MONO, SANS } from '../theme';
+import { COLORS, MONO, SANS, rem } from '../theme';
 
 export default function ReadyScreen({ level, topic, selectedTimeIdx, onChangeTimeIdx, onBack, onStart }) {
   const questionCount = topic
@@ -54,7 +54,7 @@ export default function ReadyScreen({ level, topic, selectedTimeIdx, onChangeTim
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: COLORS.bg },
   stage: { backgroundColor: COLORS.panel, borderRadius: 18, borderWidth: 1, borderColor: COLORS.line, padding: 20 },
-  back: { fontFamily: MONO, fontSize: 11.5, color: COLORS.textDim, marginBottom: 14 },
+  back: { fontFamily: MONO, fontSize: rem(11.5), color: COLORS.textDim, marginBottom: 14 },
   tag: {
     alignSelf: 'flex-start',
     backgroundColor: 'rgba(255,176,32,0.08)',
@@ -65,11 +65,11 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     marginBottom: 14,
   },
-  tagText: { fontFamily: MONO, fontSize: 10.5, letterSpacing: 1, color: COLORS.amber },
-  title: { fontFamily: MONO, fontSize: 19, color: COLORS.text, marginBottom: 16 },
+  tagText: { fontFamily: MONO, fontSize: rem(10.5), letterSpacing: 1, color: COLORS.amber },
+  title: { fontFamily: MONO, fontSize: rem(19), color: COLORS.text, marginBottom: 16 },
   rules: { marginBottom: 20, gap: 8 },
-  rule: { fontSize: 13, color: COLORS.textDim, fontFamily: SANS, lineHeight: 19 },
-  pickerLabel: { fontFamily: MONO, fontSize: 10.5, letterSpacing: 1, color: COLORS.textDim, marginBottom: 9 },
+  rule: { fontSize: rem(13), color: COLORS.textDim, fontFamily: SANS, lineHeight: 19 },
+  pickerLabel: { fontFamily: MONO, fontSize: rem(10.5), letterSpacing: 1, color: COLORS.textDim, marginBottom: 9 },
   picker: { flexDirection: 'row', gap: 8, marginBottom: 22 },
   timeOpt: {
     flex: 1,
@@ -81,8 +81,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   timeOptSelected: { borderColor: COLORS.amber, backgroundColor: 'rgba(255,176,32,0.08)' },
-  timeNum: { fontFamily: MONO, fontSize: 19, color: COLORS.text, fontWeight: '700' },
-  timeUnit: { fontFamily: MONO, fontSize: 10, color: COLORS.textDim, textTransform: 'uppercase' },
+  timeNum: { fontFamily: MONO, fontSize: rem(19), color: COLORS.text, fontWeight: '700' },
+  timeUnit: { fontFamily: MONO, fontSize: rem(10), color: COLORS.textDim, textTransform: 'uppercase' },
   startBtn: { backgroundColor: COLORS.amber, borderRadius: 10, padding: 13, alignItems: 'center' },
-  startBtnText: { fontFamily: MONO, fontWeight: '700', fontSize: 13, color: '#1A1200', letterSpacing: 1 },
+  startBtnText: { fontFamily: MONO, fontWeight: '700', fontSize: rem(13), color: '#1A1200', letterSpacing: 1 },
 });

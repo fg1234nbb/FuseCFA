@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet, Animated, Easing } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { COLORS, MONO } from '../theme';
+import { COLORS, MONO, rem } from '../theme';
 
 // Radius (px) of each level's orbit, its full-loop duration, spin
 // direction, and starting angle (degrees). Durations are slow on
@@ -39,20 +39,15 @@ function OrbitNode({ radius, duration, direction, startAngle, progressFrac, sele
     outputRange: [`${-startAngle}deg`, `${-startAngle - sweep}deg`],
   });
 
-  const size = radius * 2;
   const started = progressFrac != null;
   const dashOffset = NODE_CIRC * (1 - (progressFrac || 0));
 
   return (
-    <Animated.View
-      style={[
-        styles.orbitSpin,
-        { width: size, height: size, marginLeft: -radius, marginTop: -radius, transform: [{ rotate }] },
-      ]}
-    >
-      <View style={styles.nodeAnchor}>
-        <Animated.View style={[styles.nodeWrap, { transform: [{ rotate: counterRotate }] }]}>
-          <Pressable onPress={onPress} style={styles.node} hitSlop={8}>
+    <Animated.View pointerEvents="box-none" style={[styles.pivot, { transform: [{ rotate }] }]}>
+      <Animated.View
+        style={[styles.nodeSlot, { top: -radius - 25, transform: [{ rotate: counterRotate }] }]}
+      >
+        <Pressable onPress={onPress} style={styles.node} hitSlop={8}>
             <Svg width={50} height={50} style={styles.nodeSvg}>
               <Circle cx={25} cy={25} r={NODE_R} stroke={COLORS.line} strokeWidth={4} fill="none" />
               <Circle
@@ -69,9 +64,8 @@ function OrbitNode({ radius, duration, direction, startAngle, progressFrac, sele
             </Svg>
             <Text style={[styles.nodeNum, started && { color: COLORS.success }]}>{roman}</Text>
             <Text style={styles.nodeScore}>{started ? `${Math.round(progressFrac * 10)}/10` : 'new'}</Text>
-          </Pressable>
-        </Animated.View>
-      </View>
+        </Pressable>
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -118,13 +112,12 @@ export default function NodeOrbit({ progressByLevel, selectedLevel, onSelect }) 
 
 const styles = StyleSheet.create({
   field: { width: 300, height: 300, alignSelf: 'center', marginVertical: 10 },
-  orbitSpin: { position: 'absolute', top: '50%', left: '50%' },
-  nodeAnchor: { position: 'absolute', top: 0, left: '50%', width: 0, height: 0 },
-  nodeWrap: { marginLeft: -25, marginTop: -25, width: 50, height: 50 },
+  pivot: { position: 'absolute', top: '50%', left: '50%', width: 0, height: 0 },
+  nodeSlot: { position: 'absolute', left: -25, width: 50, height: 50 },
   node: { width: 50, height: 50, alignItems: 'center', justifyContent: 'center' },
   nodeSvg: { position: 'absolute', transform: [{ rotate: '-90deg' }] },
-  nodeNum: { fontFamily: MONO, fontWeight: '800', fontSize: 15, color: COLORS.text },
-  nodeScore: { fontFamily: MONO, fontSize: 7.5, color: COLORS.textDim, marginTop: 1 },
+  nodeNum: { fontFamily: MONO, fontWeight: '800', fontSize: rem(15), color: COLORS.text },
+  nodeScore: { fontFamily: MONO, fontSize: rem(7.5), color: COLORS.textDim, marginTop: 1 },
   core: {
     position: 'absolute',
     top: '50%',
@@ -141,6 +134,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 5,
   },
-  coreName: { fontFamily: MONO, fontWeight: '800', fontSize: 12.5, color: COLORS.amber, letterSpacing: 1 },
-  coreSub: { fontFamily: MONO, fontSize: 6.5, color: COLORS.textDim, marginTop: 3, textAlign: 'center', lineHeight: 9 },
+  coreName: { fontFamily: MONO, fontWeight: '800', fontSize: rem(12.5), color: COLORS.amber, letterSpacing: 1 },
+  coreSub: { fontFamily: MONO, fontSize: rem(6.5), color: COLORS.textDim, marginTop: 3, textAlign: 'center', lineHeight: 9 },
 });

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { COLORS, MONO } from '../theme';
+import { COLORS, MONO, rem } from '../theme';
 
 const R = 60;
 const CIRC = 2 * Math.PI * R;
@@ -39,6 +39,6 @@ const styles = StyleSheet.create({
   wrap: { width: 140, height: 140, alignSelf: 'center', marginVertical: 12 },
   svg: { transform: [{ rotate: '-90deg' }] },
   center: { position: 'absolute', width: 140, height: 140, alignItems: 'center', justifyContent: 'center' },
-  num: { fontFamily: MONO, fontWeight: '800', fontSize: 44 },
-  label: { fontFamily: MONO, fontSize: 9.5, letterSpacing: 1.5, color: COLORS.textDim, marginTop: 4 },
+  num: { fontFamily: MONO, fontWeight: '800', fontSize: rem(44) },
+  label: { fontFamily: MONO, fontSize: rem(9.5), letterSpacing: 1.5, color: COLORS.textDim, marginTop: 4 },
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
-import { COLORS, MONO, SANS } from '../theme';
+import { COLORS, MONO, SANS, rem } from '../theme';
 
 export default function LegalModal({ visible, title, text, onClose }) {
   return (
@@ -42,9 +42,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.line,
   },
-  title: { fontFamily: MONO, fontSize: 14, fontWeight: '700', color: COLORS.amber, letterSpacing: 0.5 },
-  close: { fontSize: 18, color: COLORS.textDim, paddingHorizontal: 6 },
+  title: { fontFamily: MONO, fontSize: rem(14), fontWeight: '700', color: COLORS.amber, letterSpacing: 0.5 },
+  close: { fontSize: rem(18), color: COLORS.textDim, paddingHorizontal: 6 },
   scroll: { paddingHorizontal: 20 },
   scrollContent: { paddingVertical: 16, paddingBottom: 30 },
-  body: { fontSize: 13, lineHeight: 21, color: COLORS.textDim, fontFamily: SANS },
+  body: { fontSize: rem(13), lineHeight: 21, color: COLORS.textDim, fontFamily: SANS },
 });
