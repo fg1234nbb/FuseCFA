@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, Alert, Linking } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, Alert, Linking, Modal } from 'react-native';
 
 import NodeOrbit from '../components/NodeOrbit';
 import LegalModal from '../components/LegalModal';
+import ConfirmModal from '../components/ConfirmModal';
 import { CONFIG } from '../config';
 import { LEVEL_INFO, QUESTIONS_BY_LEVEL } from '../data/questions';
 import { CONTACT_EMAIL, TERMS_TEXT, PRIVACY_TEXT } from '../data/legal';
@@ -17,6 +18,7 @@ export default function HubScreen({ onSelectLevel }) {
   const [unlockedTopics, setUnlockedTopics] = useState([]); // [] | 'ALL' | string[]
   const [toast, setToast] = useState(null);
   const [legalModal, setLegalModal] = useState(null); // null | 'terms' | 'privacy'
+  const [pendingPurchase, setPendingPurchase] = useState(null); // null | { type: 'topic'|'full', level, topic? }
 
   useEffect(() => {
     (async () => {
@@ -89,7 +91,26 @@ export default function HubScreen({ onSelectLevel }) {
     if (isUnlocked(topic)) {
       onSelectLevel(level, topic);
     } else {
-      handleUnlockTopic(level, topic);
+      setPendingPurchase({ type: 'topic', level, topic });
+    }
+  }
+
+  function handleUnlockAllPress(level) {
+    setPendingPurchase({ type: 'full', level });
+  }
+
+  function cancelPurchase() {
+    setPendingPurchase(null);
+  }
+
+  async function confirmPurchase() {
+    if (!pendingPurchase) return;
+    const { type, level, topic } = pendingPurchase;
+    setPendingPurchase(null);
+    if (type === 'topic') {
+      await handleUnlockTopic(level, topic);
+    } else {
+      await handleUnlockAll(level);
     }
   }
 
@@ -101,6 +122,36 @@ export default function HubScreen({ onSelectLevel }) {
   const detail = selectedLevel ? CONFIG.pricing[selectedLevel] : null;
   const detailProgress = selectedLevel ? progressByLevel[selectedLevel] : null;
   const topics = selectedLevel ? [...new Set(QUESTIONS_BY_LEVEL[selectedLevel].map((q) => q.topic))] : [];
+
+  // Real, truthful counts for the pre-purchase confirmation — never
+  // a marketing-round number, since this is a literal statement of
+  // what the person is about to pay for.
+  let confirmModalProps = null;
+  if (pendingPurchase) {
+    const p = CONFIG.pricing[pendingPurchase.level];
+    if (pendingPurchase.type === 'topic') {
+      const count = QUESTIONS_BY_LEVEL[pendingPurchase.level].filter((q) => q.topic === pendingPurchase.topic).length;
+      confirmModalProps = {
+        title: `Unlock ${pendingPurchase.topic}`,
+        lines: [
+          `You'll get ${count} question${count === 1 ? '' : 's'} for ${p.name} · ${pendingPurchase.topic}.`,
+          'One-time payment, no subscription.',
+        ],
+        confirmLabel: `Unlock for £${p.topicPrice.toFixed(2)}`,
+      };
+    } else {
+      const count = QUESTIONS_BY_LEVEL[pendingPurchase.level].length;
+      const topicCount = new Set(QUESTIONS_BY_LEVEL[pendingPurchase.level].map((q) => q.topic)).size;
+      confirmModalProps = {
+        title: `Unlock all of ${p.name}`,
+        lines: [
+          `You'll get all ${count} questions across ${topicCount} topics in ${p.name}.`,
+          'One-time payment, no subscription.',
+        ],
+        confirmLabel: `Unlock for £${p.fullPrice.toFixed(2)}`,
+      };
+    }
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -169,7 +220,7 @@ export default function HubScreen({ onSelectLevel }) {
               <Text style={styles.pwEyebrow}>BEST VALUE</Text>
               <Text style={styles.pwTitle}>Unlock all of {detail.name}</Text>
               <Text style={styles.pwSub}>One-time payment. No subscription.</Text>
-              <Pressable style={styles.pwBtn} onPress={() => handleUnlockAll(selectedLevel)}>
+              <Pressable style={styles.pwBtn} onPress={() => handleUnlockAllPress(selectedLevel)}>
                 <Text style={styles.pwBtnText}>Unlock everything · £{detail.fullPrice.toFixed(2)}</Text>
               </Pressable>
             </View>
@@ -196,9 +247,13 @@ export default function HubScreen({ onSelectLevel }) {
       </View>
 
       {toast && (
-        <View style={styles.toast}>
-          <Text style={styles.toastText}>{toast}</Text>
-        </View>
+        <Modal visible transparent animationType="fade">
+          <View style={styles.toastOverlay} pointerEvents="box-none">
+            <View style={styles.toast}>
+              <Text style={styles.toastText}>{toast}</Text>
+            </View>
+          </View>
+        </Modal>
       )}
 
       <LegalModal
@@ -213,6 +268,17 @@ export default function HubScreen({ onSelectLevel }) {
         text={PRIVACY_TEXT}
         onClose={() => setLegalModal(null)}
       />
+
+      {confirmModalProps && (
+        <ConfirmModal
+          visible={!!pendingPurchase}
+          title={confirmModalProps.title}
+          lines={confirmModalProps.lines}
+          confirmLabel={confirmModalProps.confirmLabel}
+          onConfirm={confirmPurchase}
+          onCancel={cancelPurchase}
+        />
+      )}
     </ScrollView>
   );
 }
@@ -304,17 +370,21 @@ const styles = StyleSheet.create({
   pwSub: { fontSize: 12.5, color: COLORS.textDim, marginBottom: 14, fontFamily: SANS },
   pwBtn: { backgroundColor: COLORS.amber, borderRadius: 10, padding: 13, alignItems: 'center' },
   pwBtnText: { fontFamily: MONO, fontWeight: '800', fontSize: 13, color: '#1A1200' },
+  toastOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(11,14,17,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
   toast: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
     backgroundColor: COLORS.panelRaised,
     borderWidth: 1,
     borderColor: COLORS.amberDim,
-    borderRadius: 10,
-    padding: 12,
-    alignItems: 'center',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    maxWidth: 320,
   },
-  toastText: { fontFamily: MONO, fontSize: 12.5, color: COLORS.text },
+  toastText: { fontFamily: MONO, fontSize: 13, color: COLORS.text, textAlign: 'center', lineHeight: 19 },
 });
