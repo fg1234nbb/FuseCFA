@@ -1,0 +1,30 @@
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+
+# Dependencies
+node_modules/
+
+# Native build folders (only appear after `expo prebuild` / dev builds)
+ios/
+android/
+
+# Native env files
+.env*.local
+
+# macOS
+.DS_Store
+
+# Logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Editor
+.vscode/
+.idea/
+
+# EAS
+.eas/

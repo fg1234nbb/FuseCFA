@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Fuse — CFA Speed Drill",
+    "slug": "fuse-cfa",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0B0E11",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B0E11"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.yourname.fusecfa",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "com.yourname.fusecfa",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0B0E11"
+      }
+    }
+  }
+}
